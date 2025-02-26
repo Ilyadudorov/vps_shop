@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+{% for vps in vps_collection %}
+    Сервер <a href="{% url 'vps_target' vps.uid %}"> {{ vps.name }}</a><br>
+{% endfor %}
+
+
+{% endblock content %}
+
