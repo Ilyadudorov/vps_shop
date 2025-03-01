@@ -1,14 +1,26 @@
 import libvirt
 import xml.etree.ElementTree as ET
 from django.conf import settings
-from .models import Vps
+from servers.models import Vps
 
 class VpsService:
     def __init__(self):
         """Подключение к гипервизору"""
-        self.conn = libvirt.open("qemu:///system")  # Подключаемся к локальному гипервизору
+        self.conn = libvirt.open("qemu+ssh://user@ip_server/system")
+        #self.conn = libvirt.open("qemu:///system")  # Подключаемся к локальному гипервизору
         if self.conn is None:
             raise Exception("Ошибка подключения к гипервизору")
+        
+    def status_list_all(self):
+        domains = self.conn.listAllDomains()
+        if not domains:
+            print("Нет запущенных виртуальных машин")
+        else:
+            result = []
+            for domain in domains:
+                result.append(domain.XMLDesc())
+            return result
+            
 
     def create_vps(self, name, cpu, ram, disk_size, user):
         """Создание VPS через libvirt"""

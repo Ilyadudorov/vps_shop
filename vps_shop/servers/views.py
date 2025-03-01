@@ -22,6 +22,8 @@ from .permissions import IsOwnerCreateReadUpdateDelete
 from .serializer import VpsSerializer
 from .utils import generate_random_mac_address
 
+from .services.vps_service import VpsService
+
 
 ### DRF(API) ###
 
@@ -29,7 +31,7 @@ from .utils import generate_random_mac_address
 class VpsViewSet(viewsets.ModelViewSet):
     # queryset = Vps.objects.all()
     serializer_class = VpsSerializer
-    permission_classes = [IsOwnerCreateReadUpdateDelete]
+    # permission_classes = [IsOwnerCreateReadUpdateDelete]
     def get_queryset(self):
         return Vps.objects.filter(user=self.request.user)
 
@@ -46,6 +48,12 @@ class VpsViewSet(viewsets.ModelViewSet):
         vpsList = Vps.objects.all()
         map_mac = {'mac address': {vps.name: vps.mac_address for vps in vpsList}}
         return Response(map_mac)
+    
+    @action(methods=['get'], detail=False)
+    def get_status_all_vps(self, request):
+        vps_service = VpsService()
+        status_vps = vps_service.status_list_all()
+        return Response ({'status all vps': str(status_vps)})
 
     # @action(methods=['get'], detail=False)
     # def get_mac_address(self, request):
